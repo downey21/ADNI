@@ -1,0 +1,14 @@
+Chris Rorden's dcm2niiX version v1.0.20181125  (JP2:OpenJPEG) GCC9.3.0 (64-bit Linux)
+Found 208 DICOM file(s)
+Convert 208 DICOM as /root/data/ADNI/example/MRI/nifti/135_S_6509/Accelerated_Sagittal_MPRAGE__MSV22_/2024-08-08_11_16_51.0_I10914001a (256x256x208x1)
+compress: "/usr/bin/pigz" -n -f -6 "/root/data/ADNI/example/MRI/nifti/135_S_6509/Accelerated_Sagittal_MPRAGE__MSV22_/2024-08-08_11_16_51.0_I10914001a.nii"
+Conversion required 0.329280 seconds (0.226991 for core code).
+Chris Rorden's dcm2niiX version v1.0.20181125  (JP2:OpenJPEG) GCC9.3.0 (64-bit Linux)
+Found 9600 DICOM file(s)
+Convert 9600 DICOM as /root/data/ADNI/example/fMRI/nifti/135_S_6509/Axial_HB_rsfMRI__Eyes_Open___MSV22_/2024-08-08_12_03_24.0_I10910954a (64x64x48x200)
+compress: "/usr/bin/pigz" -n -f -6 "/root/data/ADNI/example/fMRI/nifti/135_S_6509/Axial_HB_rsfMRI__Eyes_Open___MSV22_/2024-08-08_12_03_24.0_I10910954a.nii"
+Conversion required 4.220924 seconds (3.986321 for core code).
+Processing subject 135_S_6509 (1/1)
+  → Converting: /root/data/ADNI/example/MRI/dicom/135_S_6509/Accelerated_Sagittal_MPRAGE__MSV22_/2024-08-08_11_16_51.0/I10914001 → /root/data/ADNI/example/MRI/nifti/135_S_6509/Accelerated_Sagittal_MPRAGE__MSV22_/2024-08-08_11_16_51.0_I10914001.nii.gz
+Processing subject 135_S_6509 (1/1)
+  → Converting: /root/data/ADNI/example/fMRI/dicom/135_S_6509/Axial_HB_rsfMRI__Eyes_Open___MSV22_/2024-08-08_12_03_24.0/I10910954 → /root/data/ADNI/example/fMRI/nifti/135_S_6509/Axial_HB_rsfMRI__Eyes_Open___MSV22_/2024-08-08_12_03_24.0_I10910954.nii.gz
