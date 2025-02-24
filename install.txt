@@ -9,3 +9,9 @@ dicom -> nifti
 apt update
 apt install dcm2niix
 apt install pigz
+
+nifti -> tensor
+pip install nibabel
+
+tensor visualization
+pip install nilearn
