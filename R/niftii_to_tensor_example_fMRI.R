@@ -32,8 +32,12 @@ slice_y <- dim(fmri_matrix)[2] %/% 2
 slice_z <- dim(fmri_matrix)[3] %/% 2
 
 # Plot using oro.nifti::orthographic
+
+# oro.nifti::tim.colors()
+# oro.nifti::hotmetal()
+
 pdf("./Project/ADNI/result/fMRI/fmri_orthographic.pdf", width = 8, height = 6)
-oro.nifti::orthographic(nifti(fmri_3d), xyz = c(slice_x, slice_y, slice_z), main = "fMRI Baseline Image (First Time Point)")
+oro.nifti::orthographic(nifti(fmri_3d), col = oro.nifti::tim.colors(), xyz = c(slice_x, slice_y, slice_z), main = "fMRI Baseline Image (First Time Point)")
 invisible(dev.off())
 
 # Selecting the middle time point

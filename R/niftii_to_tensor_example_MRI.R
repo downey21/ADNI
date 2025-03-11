@@ -27,8 +27,12 @@ slice_y <- dim(mri_matrix)[2] %/% 2
 slice_z <- dim(mri_matrix)[3] %/% 2
 
 # Plot using oro.nifti::orthographic
+
+# oro.nifti::tim.colors()
+# oro.nifti::hotmetal()
+
 pdf("./Project/ADNI/result/MRI/orthographic_view.pdf", width = 8, height = 6)
-oro.nifti::orthographic(mri_data, xyz = c(slice_x, slice_y, slice_z), main = "T1-weighted MRI")
+oro.nifti::orthographic(mri_data, col = oro.nifti::tim.colors(), xyz = c(slice_x, slice_y, slice_z), main = "T1-weighted MRI")
 invisible(dev.off())
 
 # Plot using ggplot2
