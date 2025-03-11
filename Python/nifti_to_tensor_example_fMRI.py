@@ -34,6 +34,8 @@ plotting.plot_epi(
 plotting.show()
 
 # Plot using matplotlib
+
+# Selecting the middle slice
 time_point = num_timepoints // 2
 slice_x = img_data.shape[0] // 2
 slice_y = img_data.shape[1] // 2

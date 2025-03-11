@@ -31,6 +31,8 @@ plotting.plot_anat(img,
 plotting.show()
 
 # Plot using matplotlib
+
+# Selecting the middle slice
 slice_x = img_data.shape[0] // 2
 slice_y = img_data.shape[1] // 2
 slice_z = img_data.shape[2] // 2

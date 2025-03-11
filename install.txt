@@ -12,6 +12,8 @@ apt install pigz
 
 nifti -> tensor
 pip install nibabel
+install.packages("oro.nifti")
 
 tensor visualization
 pip install nilearn
+install.packages("oro.nifti")
