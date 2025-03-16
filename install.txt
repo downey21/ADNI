@@ -17,3 +17,11 @@ install.packages("oro.nifti")
 tensor visualization
 pip install nilearn
 install.packages("oro.nifti")
+
+preprocessing
+pip install nipype
+apt update
+apt install fsl
+bash setup_fsl.sh
+bash setup_fsl_templates.sh
+bash setup_ants.sh

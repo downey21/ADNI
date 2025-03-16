@@ -1,8 +1,6 @@
 
 # -*- coding: utf-8
 
-# nohup python3 nifti_to_tensor_example_MRI.py > output_nifti_to_tensor_example_MRI.log 2>&1 < /dev/null &
-
 import nibabel as nib
 import numpy as np
 from nilearn import plotting
