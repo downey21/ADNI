@@ -1,14 +1,14 @@
 
 # -*- coding: utf-8
 
-# nohup env PYTHONDONTWRITEBYTECODE=1 python3 dicom_to_nifti_example.py > output_dicom_to_nifti_example.log 2>&1 < /dev/null &
+# nohup env PYTHONDONTWRITEBYTECODE=1 python3 dicom_to_nifti.py > output_dicom_to_nifti.log 2>&1 < /dev/null &
 
 import os
 from subprocess import call
 
 from logging_utils import setup_logging, log_print
 
-setup_logging("output_dicom_to_nifti_example.log")
+setup_logging("output_dicom_to_nifti.log")
 
 def convert_dicom_to_nifti(dicom_dir, nifti_dir, measurement_type_sequences):
     """DICOM -> NIfTI"""
