@@ -25,3 +25,4 @@ apt install fsl
 bash setup_fsl.sh
 bash setup_fsl_templates.sh
 bash setup_ants.sh
+pip install antspyx

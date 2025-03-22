@@ -30,29 +30,29 @@ setup_logging("output_preprocessing_MRI.log")
 # output_dir = "/root/data/ADNI/example/MRI/nifti/135_S_6509/preprocessed"
 # os.makedirs(output_dir, exist_ok=True)
 
-# Skull Stripping - Removing non-brain structures
-# MRI images include skull and other tissues. BET (Brain Extraction Tool) extracts only brain regions.
-
-# Explanation of output files from BET:
-# - brain.nii.gz: Skull-stripped brain MRI image.
-# - brain_mask.nii.gz: Binary mask representing the brain region (0 for background, 1 for brain tissue).
-# - The mask is used to select only the brain region, essential for segmentation and fMRI analysis.
-
-# print("Running Skull Stripping...")
-# bet = BET(in_file=input_nifti, out_file=os.path.join(output_dir, "brain.nii.gz"), mask=True)
-# bet.run()
-
 # Bias Field Correction - Correcting intensity inhomogeneity
 # Magnetic field inhomogeneity can cause bias field effects, making certain areas appear brighter/darker.
 # ANTs' N4BiasFieldCorrection normalizes the intensity distribution.
 
 # Output from N4BiasFieldCorrection:
-# brain_n4.nii.gz: Bias Field Correction (N4) applied image
+# n4.nii.gz: Bias Field Correction (N4) applied image
 
 # print("Applying Bias Field Correction...")
-# n4 = N4BiasFieldCorrection(input_image=os.path.join(output_dir, "brain.nii.gz"),
-#                            output_image=os.path.join(output_dir, "brain_n4.nii.gz"))
+# n4 = N4BiasFieldCorrection(input_image=input_nifti,
+#                            output_image=os.path.join(output_dir, "n4.nii.gz"))
 # n4.run()
+
+# Skull Stripping - Removing non-brain structures
+# MRI images include skull and other tissues. BET (Brain Extraction Tool) extracts only brain regions.
+
+# Explanation of output files from BET:
+# - brain_n4.nii.gz: Skull-stripped brain MRI image.
+# - brain_n4_mask.nii.gz: Binary mask representing the brain region (0 for background, 1 for brain tissue).
+# - The mask is used to select only the brain region, essential for segmentation and fMRI analysis.
+
+# print("Running Skull Stripping...")
+# bet = BET(in_file=os.path.join(output_dir, "n4.nii.gz"), out_file=os.path.join(output_dir, "brain_n4.nii.gz"), mask=True)
+# bet.run()
 
 # Tissue Segmentation - Segmenting GM, WM, and CSF
 # FAST (FSL) segments the brain into three tissue classes: gray matter (GM), white matter (WM), and cerebrospinal fluid (CSF).
@@ -158,18 +158,18 @@ def preprocess_subject(subject_path, measurement_type, ref_template, total_subje
 
         log_print(f"Processing subject {os.path.basename(subject_path)} ({subject_index}/{total_subjects}) - File {file_index}/{len(nifti_files)}: {file_id}")
 
-        # Step 1: Skull Stripping (BET - Brain Extraction)
-        log_print(f"Step 1/5: Skull Stripping (BET) - {file_id}")
-        bet = BET(in_file=input_nifti, out_file=os.path.join(output_dir, f"brain_{file_id}.nii.gz"), mask=True)
-        bet.run()
-
-        # Step 2: Bias Field Correction (N4ITK - ANTs)
-        log_print(f"Step 2/5: Bias Field Correction (N4ITK) - {file_id}")
+        # Step 1: Bias Field Correction (N4ITK - ANTs)
+        log_print(f"Step 1/5: Bias Field Correction (N4ITK) - {file_id}")
         n4 = N4BiasFieldCorrection(
-            input_image=os.path.join(output_dir, f"brain_{file_id}.nii.gz"),
-            output_image=os.path.join(output_dir, f"brain_n4_{file_id}.nii.gz")
+            input_image=input_nifti,
+            output_image=os.path.join(output_dir, f"n4_{file_id}.nii.gz")
         )
         n4.run()
+
+        # Step 2: Skull Stripping (BET - Brain Extraction)
+        log_print(f"Step 2/5: Skull Stripping (BET) - {file_id}")
+        bet = BET(in_file=os.path.join(output_dir, f"n4_{file_id}.nii.gz"), out_file=os.path.join(output_dir, f"brain_n4_{file_id}.nii.gz"), mask=True)
+        bet.run()
 
         # Step 3: Tissue Segmentation (FAST - FSL)
         log_print(f"Step 3/5: Tissue Segmentation (FAST) - {file_id}")

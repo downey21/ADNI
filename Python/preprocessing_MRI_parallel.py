@@ -37,18 +37,18 @@ def mri_preprocess_subject(subject_id, base_dir, measurement_type, ref_template,
 
         log_print(f"Processing {subject_id} ({subject_index}/{total_subjects}) - File {file_index}/{len(nifti_files)}: {file_id}")
 
-        # Step 1: Skull Stripping (BET - Brain Extraction)
-        log_print(f"Step 1/5: Skull Stripping (BET) - {file_id}")
-        bet = BET(in_file=input_nifti, out_file=os.path.join(output_dir, f"brain_{file_id}.nii.gz"), mask=True)
-        bet.run()
-
-        # Step 2: Bias Field Correction (N4ITK - ANTs)
-        log_print(f"Step 2/5: Bias Field Correction (N4ITK) - {file_id}")
+        # Step 1: Bias Field Correction (N4ITK - ANTs)
+        log_print(f"Step 1/5: Bias Field Correction (N4ITK) - {file_id}")
         n4 = N4BiasFieldCorrection(
-            input_image=os.path.join(output_dir, f"brain_{file_id}.nii.gz"),
-            output_image=os.path.join(output_dir, f"brain_n4_{file_id}.nii.gz")
+            input_image=input_nifti,
+            output_image=os.path.join(output_dir, f"n4_{file_id}.nii.gz")
         )
         n4.run()
+
+        # Step 2: Skull Stripping (BET - Brain Extraction)
+        log_print(f"Step 2/5: Skull Stripping (BET) - {file_id}")
+        bet = BET(in_file=os.path.join(output_dir, f"n4_{file_id}.nii.gz"), out_file=os.path.join(output_dir, f"brain_n4_{file_id}.nii.gz"), mask=True)
+        bet.run()
 
         # Step 3: Tissue Segmentation (FAST - FSL)
         log_print(f"Step 3/5: Tissue Segmentation (FAST) - {file_id}")
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     NUM_CORES = 10
 
     mri_preprocess_all_subjects_parallel(
-        base_dir="/root/data/ADNI/example/MRI/nifti/",
+        base_dir="/root/Project/ADNI/data/example/MRI/nifti",
         measurement_type="Accelerated_Sagittal_MPRAGE__MSV22_",
         ref_template="/usr/lib/fsl/5.0/data/standard/MNI152_T1_2mm_brain.nii.gz",
         num_workers=NUM_CORES
