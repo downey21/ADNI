@@ -9,7 +9,7 @@ import multiprocessing
 import numpy as np
 import nibabel as nib
 from nipype.interfaces.fsl import BET, MCFLIRT, SliceTimer
-from nilearn.image import smooth_img, mean_img
+from nilearn.image import smooth_img, mean_img, clean_img
 
 import ants
 
@@ -40,7 +40,7 @@ def fmri_preprocess_subject(subject_id, base_dir, measurement_type, ref_template
         log_print(f"Processing {subject_id} ({subject_index}/{total_subjects}) - File {file_index}/{len(nifti_files)}: {file_id}")
 
         # Step 1: Slice Timing Correction
-        log_print(f"Step 1/5: Slice Timing Correction - {file_id}")
+        log_print(f"Step 1/6: Slice Timing Correction - {file_id}")
         slicetimer = SliceTimer(
             in_file=input_nifti,
             out_file=os.path.join(output_dir, f"slice_time_corrected_{file_id}.nii.gz"),
@@ -49,7 +49,7 @@ def fmri_preprocess_subject(subject_id, base_dir, measurement_type, ref_template
         slicetimer.run()
 
         # Step 2: Motion Correction
-        log_print(f"Step 2/5: Motion Correction (MCFLIRT) - {file_id}")
+        log_print(f"Step 2/6: Motion Correction (MCFLIRT) - {file_id}")
         motion_out = os.path.join(output_dir, f"motion_corrected_{file_id}.nii.gz")
         mcflirt = MCFLIRT(
             in_file=os.path.join(output_dir, f"slice_time_corrected_{file_id}.nii.gz"),
@@ -60,7 +60,7 @@ def fmri_preprocess_subject(subject_id, base_dir, measurement_type, ref_template
         mcflirt.run()
 
         # Step 3: Skull Stripping (BET with 4D support)
-        log_print(f"Step 3/5: Skull Stripping (BET with 4D support) - {file_id}")
+        log_print(f"Step 3/6: Skull Stripping (BET with 4D support) - {file_id}")
         
         mean_img_3d = mean_img(motion_out, copy_header=True)
         mean_img_path = os.path.join(output_dir, f"mean_{file_id}.nii.gz")
@@ -85,7 +85,7 @@ def fmri_preprocess_subject(subject_id, base_dir, measurement_type, ref_template
         nib.save(masked_img, brain_4d_path)
 
         # Step 4: Spatial Normalization (ANTs)
-        log_print(f"Step 4/5: Spatial Normalization (ANTs - Affine) - {file_id}")
+        log_print(f"Step 4/6: Spatial Normalization (ANTs - Affine) - {file_id}")
 
         fixed_ref_template = ants.image_read(ref_template)
 
@@ -109,11 +109,39 @@ def fmri_preprocess_subject(subject_id, base_dir, measurement_type, ref_template
         brain_mni_path = os.path.join(output_dir, f"brain_mni_{file_id}.nii.gz")
         warped_fmri.to_filename(brain_mni_path)
 
+        warped_mask = ants.apply_transforms(
+            fixed=fixed_ref_template,
+            moving=ants.image_read(mask_path),
+            transformlist=reg["fwdtransforms"],
+            interpolator="nearestNeighbor",
+            imagetype=0
+        )
+
+        mni_mask_path = os.path.join(output_dir, f"brain_mean_{file_id}_mask_mni.nii.gz")
+        warped_mask.to_filename(mni_mask_path)
+
         # Step 5: Smoothing
-        log_print(f"Step 5/5: Applying Gaussian Smoothing - {file_id}")
+        log_print(f"Step 5/6: Applying Gaussian Smoothing - {file_id}")
         smoothed_img = smooth_img(os.path.join(output_dir, f"brain_mni_{file_id}.nii.gz"), fwhm=5)
         nib.save(smoothed_img, os.path.join(output_dir, f"brain_smoothed_{file_id}.nii.gz"))
 
+        # Step 6: Band-pass Filtering
+        log_print(f"Step 6/6: Applying Band-pass Filtering - {file_id}")
+
+        smoothed_fmri_img = nib.load(os.path.join(output_dir, f"brain_smoothed_{file_id}.nii.gz"))
+        tr = smoothed_fmri_img.header.get_zooms()[3]
+
+        filtered_img = clean_img(
+            smoothed_fmri_img, 
+            detrend=True,
+            standardize=True,
+            low_pass=0.1, high_pass=0.01,
+            t_r=tr,
+            mask_img=mni_mask_path
+        )
+
+        nib.save(filtered_img, os.path.join(output_dir, f"bandpass_filtered_{file_id}.nii.gz"))
+        
         log_print(f"Completed processing: {file_id}\n")
 
 def fmri_preprocess_all_subjects_parallel(base_dir, measurement_type, ref_template, num_workers):
@@ -133,7 +161,7 @@ if __name__ == "__main__":
     NUM_CORES = 10
 
     fmri_preprocess_all_subjects_parallel(
-        base_dir="/root/Project/ADNI/data/example/fMRI/nifti",
+        base_dir="/root/data/ADNI/example/fMRI/nifti/",
         measurement_type="Axial_HB_rsfMRI__Eyes_Open___MSV22_",
         ref_template="/usr/lib/fsl/5.0/data/standard/MNI152_T1_2mm_brain.nii.gz",
         num_workers=NUM_CORES

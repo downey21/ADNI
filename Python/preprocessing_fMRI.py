@@ -8,7 +8,7 @@ import glob
 import numpy as np
 import nibabel as nib
 from nipype.interfaces.fsl import BET, MCFLIRT, SliceTimer
-from nilearn.image import smooth_img, mean_img
+from nilearn.image import smooth_img, mean_img, clean_img
 
 import ants
 
@@ -63,7 +63,7 @@ def preprocess_subject(subject_path, measurement_type, ref_template, total_subje
         log_print(f"Processing subject {os.path.basename(subject_path)} ({subject_index}/{total_subjects}) - File {file_index}/{len(nifti_files)}: {file_id}")
 
         # Step 1: Slice Timing Correction
-        log_print(f"Step 1/5: Slice Timing Correction - {file_id}")
+        log_print(f"Step 1/6: Slice Timing Correction - {file_id}")
         slicetimer = SliceTimer(
             in_file=input_nifti,
             out_file=os.path.join(output_dir, f"slice_time_corrected_{file_id}.nii.gz"),
@@ -72,7 +72,7 @@ def preprocess_subject(subject_path, measurement_type, ref_template, total_subje
         slicetimer.run()
 
         # Step 2: Motion Correction
-        log_print(f"Step 2/5: Motion Correction (MCFLIRT) - {file_id}")
+        log_print(f"Step 2/6: Motion Correction (MCFLIRT) - {file_id}")
         motion_out = os.path.join(output_dir, f"motion_corrected_{file_id}.nii.gz")
         mcflirt = MCFLIRT(
             in_file=os.path.join(output_dir, f"slice_time_corrected_{file_id}.nii.gz"),
@@ -83,7 +83,7 @@ def preprocess_subject(subject_path, measurement_type, ref_template, total_subje
         mcflirt.run()
 
         # Step 3: Skull Stripping (BET with 4D support)
-        log_print(f"Step 3/5: Skull Stripping (BET with 4D support) - {file_id}")
+        log_print(f"Step 3/6: Skull Stripping (BET with 4D support) - {file_id}")
 
         mean_img_3d = mean_img(motion_out, copy_header=True)
         mean_img_path = os.path.join(output_dir, f"mean_{file_id}.nii.gz")
@@ -108,7 +108,7 @@ def preprocess_subject(subject_path, measurement_type, ref_template, total_subje
         nib.save(masked_img, brain_4d_path)
 
         # Step 4: Spatial Normalization (ANTs)
-        log_print(f"Step 4/5: Spatial Normalization (ANTs - Affine) - {file_id}")
+        log_print(f"Step 4/6: Spatial Normalization (ANTs - Affine) - {file_id}")
 
         fixed_ref_template = ants.image_read(ref_template)
 
@@ -132,10 +132,38 @@ def preprocess_subject(subject_path, measurement_type, ref_template, total_subje
         brain_mni_path = os.path.join(output_dir, f"brain_mni_{file_id}.nii.gz")
         warped_fmri.to_filename(brain_mni_path)
 
+        warped_mask = ants.apply_transforms(
+            fixed=fixed_ref_template,
+            moving=ants.image_read(mask_path),
+            transformlist=reg["fwdtransforms"],
+            interpolator="nearestNeighbor",
+            imagetype=0
+        )
+
+        mni_mask_path = os.path.join(output_dir, f"brain_mean_{file_id}_mask_mni.nii.gz")
+        warped_mask.to_filename(mni_mask_path)
+
         # Step 5: Smoothing
-        log_print(f"Step 5/5: Applying Gaussian Smoothing - {file_id}")
+        log_print(f"Step 5/6: Applying Gaussian Smoothing - {file_id}")
         smoothed_img = smooth_img(os.path.join(output_dir, f"brain_mni_{file_id}.nii.gz"), fwhm=5)
         nib.save(smoothed_img, os.path.join(output_dir, f"brain_smoothed_{file_id}.nii.gz"))
+
+        # Step 6: Band-pass Filtering
+        log_print(f"Step 6/6: Applying Band-pass Filtering - {file_id}")
+
+        smoothed_fmri_img = nib.load(os.path.join(output_dir, f"brain_smoothed_{file_id}.nii.gz"))
+        tr = smoothed_fmri_img.header.get_zooms()[3]
+
+        filtered_img = clean_img(
+            smoothed_fmri_img, 
+            detrend=True,
+            standardize=True,
+            low_pass=0.1, high_pass=0.01,
+            t_r=tr,
+            mask_img=mni_mask_path
+        )
+
+        nib.save(filtered_img, os.path.join(output_dir, f"bandpass_filtered_{file_id}.nii.gz"))
 
         log_print(f"Completed processing: {file_id}\n")
 

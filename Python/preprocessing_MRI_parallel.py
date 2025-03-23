@@ -90,7 +90,7 @@ if __name__ == "__main__":
     NUM_CORES = 10
 
     mri_preprocess_all_subjects_parallel(
-        base_dir="/root/Project/ADNI/data/example/MRI/nifti",
+        base_dir="/root/data/ADNI/example/MRI/nifti/",
         measurement_type="Accelerated_Sagittal_MPRAGE__MSV22_",
         ref_template="/usr/lib/fsl/5.0/data/standard/MNI152_T1_2mm_brain.nii.gz",
         num_workers=NUM_CORES
