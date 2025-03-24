@@ -26,3 +26,4 @@ bash setup_fsl.sh
 bash setup_fsl_templates.sh
 bash setup_ants.sh
 pip install antspyx
+bash setup_atlas.sh

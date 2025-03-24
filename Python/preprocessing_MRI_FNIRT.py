@@ -6,11 +6,9 @@
 import os
 import glob
 import nibabel as nib
-from nipype.interfaces.fsl import BET, FAST
+from nipype.interfaces.fsl import BET, FAST, FNIRT, ApplyWarp
 from nipype.interfaces.ants import N4BiasFieldCorrection
 from nilearn.image import smooth_img
-
-import ants
 
 from logging_utils import setup_logging, log_print
 
@@ -178,19 +176,15 @@ def preprocess_subject(subject_path, measurement_type, ref_template, total_subje
         fast = FAST(in_files=os.path.join(output_dir, f"brain_n4_{file_id}.nii.gz"), number_classes=3)
         fast.run()
 
-        # Step 4: Spatial Normalization (ANTs)
-        log_print(f"Step 4/5: Spatial Normalization (ANTs - Affine) - {file_id}")
-
-        fixed_ref_template = ants.image_read(ref_template)
-
-        reg = ants.registration(
-            fixed=fixed_ref_template,
-            moving=ants.image_read(os.path.join(output_dir, f"brain_n4_{file_id}.nii.gz")),
-            type_of_transform="Affine"
+        # Step 4: Spatial Normalization (FNIRT - FSL)
+        log_print(f"Step 4/5: Spatial Normalization (FNIRT) - {file_id}")
+        fnirt = FNIRT(
+            in_file=os.path.join(output_dir, f"brain_n4_{file_id}.nii.gz"),
+            ref_file=ref_template,
+            warped_file=os.path.join(output_dir, f"brain_mni_{file_id}.nii.gz")
         )
-
-        brain_mni_path = os.path.join(output_dir, f"brain_mni_{file_id}.nii.gz")
-        reg["warpedmovout"].to_filename(brain_mni_path)
+        fnirt.inputs.log_file = os.path.join(output_dir, f"FNIRT_log_{file_id}.txt")
+        fnirt_result = fnirt.run()
 
         pve_types = {
             "CSF": f"{output_dir}/brain_n4_{file_id}_pve_0.nii.gz",
@@ -199,28 +193,22 @@ def preprocess_subject(subject_path, measurement_type, ref_template, total_subje
         }
 
         for tissue, pve_path in pve_types.items():
-            warped_pve = ants.apply_transforms(
-                fixed=fixed_ref_template,
-                moving=ants.image_read(pve_path),
-                transformlist=reg["fwdtransforms"],
-                interpolator="linear",
-                imagetype=0
-            )
-
             output_pve_mni = os.path.join(output_dir, f"brain_n4_{file_id}_pve_{tissue}_mni.nii.gz")
-            warped_pve.to_filename(output_pve_mni)
+            applywarp = ApplyWarp()
+            applywarp.inputs.in_file = pve_path
+            applywarp.inputs.ref_file = ref_template
+            applywarp.inputs.field_file = fnirt_result.outputs.fieldcoeff_file
+            applywarp.inputs.out_file = output_pve_mni
+            applywarp.inputs.interp = "trilinear"
+            applywarp.run()
 
-        mask_img = ants.image_read(os.path.join(output_dir, f"brain_n4_{file_id}_mask.nii.gz"))
-        warped_mask = ants.apply_transforms(
-            fixed=fixed_ref_template,
-            moving=mask_img,
-            transformlist=reg["fwdtransforms"],
-            interpolator="nearestNeighbor",
-            imagetype=0
-        )
-
-        output_mask_mni = os.path.join(output_dir, f"brain_n4_{file_id}_mask_mni.nii.gz")
-        warped_mask.to_filename(output_mask_mni)
+        applywarp = ApplyWarp()
+        applywarp.inputs.in_file = os.path.join(output_dir, f"brain_n4_{file_id}_mask.nii.gz")
+        applywarp.inputs.ref_file = ref_template
+        applywarp.inputs.field_file = fnirt_result.outputs.fieldcoeff_file
+        applywarp.inputs.out_file = os.path.join(output_dir, f"brain_n4_{file_id}_mask_mni.nii.gz")
+        applywarp.inputs.interp = "nn"
+        applywarp.run()
 
         # Step 5: Smoothing (Gaussian Smoothing)
         log_print(f"Step 5/5: Applying Gaussian Smoothing - {file_id}")

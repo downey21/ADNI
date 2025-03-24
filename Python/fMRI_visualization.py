@@ -51,7 +51,7 @@ display = plotting.plot_epi(
     colorbar=True,
     black_bg=True,
     title="Step 0 (raw data)",
-    cmap=plt.cm.nipy_spectral,
+    cmap=plt.cm.nipy_spectral
 )
 display.savefig(os.path.join(output_dir, "step0.pdf"))
 display.close()
@@ -68,7 +68,7 @@ display = plotting.plot_epi(
     colorbar=True,
     black_bg=True,
     title="Step 1 (Slice Timing Correction)",
-    cmap=plt.cm.nipy_spectral,
+    cmap=plt.cm.nipy_spectral
 )
 display.savefig(os.path.join(output_dir, "step1.pdf"))
 display.close()
@@ -85,7 +85,7 @@ display = plotting.plot_epi(
     colorbar=True,
     black_bg=True,
     title="Step 2 (Motion Correction)",
-    cmap=plt.cm.nipy_spectral,
+    cmap=plt.cm.nipy_spectral
 )
 display.savefig(os.path.join(output_dir, "step2.pdf"))
 display.close()
@@ -102,7 +102,7 @@ display = plotting.plot_epi(
     colorbar=True,
     black_bg=True,
     title="Step 3 (Skull Stripping) with boundary",
-    cmap=plt.cm.nipy_spectral,
+    cmap=plt.cm.nipy_spectral
 )
 display.add_contours(
     nib.load(mask),
@@ -124,7 +124,7 @@ display = plotting.plot_epi(
     colorbar=True,
     black_bg=True,
     title="Step 4 (Spatial Normalization) with boundary",
-    cmap=plt.cm.nipy_spectral,
+    cmap=plt.cm.nipy_spectral
 )
 display.add_contours(
     nib.load(mask_mni),
@@ -146,7 +146,7 @@ display = plotting.plot_epi(
     colorbar=True,
     black_bg=True,
     title="Step 5 (Smoothing) with boundary",
-    cmap=plt.cm.nipy_spectral,
+    cmap=plt.cm.nipy_spectral
 )
 display.add_contours(
     nib.load(mask_mni),

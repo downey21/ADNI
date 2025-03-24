@@ -6,6 +6,7 @@
 import os
 import glob
 import multiprocessing
+import pandas as pd
 import numpy as np
 import nibabel as nib
 from nipype.interfaces.fsl import BET, MCFLIRT, SliceTimer
@@ -58,6 +59,15 @@ def fmri_preprocess_subject(subject_id, base_dir, measurement_type, ref_template
             save_plots=True
         )
         mcflirt.run()
+
+        motion = np.loadtxt(os.path.join(output_dir, f"motion_corrected_{file_id}.nii.gz.par"))
+
+        motion_deriv = np.vstack([np.zeros((1, 6)), np.diff(motion, axis=0)]) # diff (1st row = 0)
+        confounds = np.hstack([motion, motion_deriv])
+        columns = ["X", "Y", "Z", "RotX", "RotY", "RotZ", "dX", "dY", "dZ", "dRotX", "dRotY", "dRotZ"]
+
+        confounds_df = pd.DataFrame(confounds, columns=columns)
+        confounds_df.to_csv(os.path.join(output_dir, f"motion_corrected_{file_id}_confounds.tsv"), sep="\t", index=False)
 
         # Step 3: Skull Stripping (BET with 4D support)
         log_print(f"Step 3/6: Skull Stripping (BET with 4D support) - {file_id}")
@@ -122,7 +132,7 @@ def fmri_preprocess_subject(subject_id, base_dir, measurement_type, ref_template
 
         # Step 5: Smoothing
         log_print(f"Step 5/6: Applying Gaussian Smoothing - {file_id}")
-        smoothed_img = smooth_img(os.path.join(output_dir, f"brain_mni_{file_id}.nii.gz"), fwhm=5)
+        smoothed_img = smooth_img(os.path.join(output_dir, f"brain_mni_{file_id}.nii.gz"), fwhm=4)
         nib.save(smoothed_img, os.path.join(output_dir, f"brain_smoothed_{file_id}.nii.gz"))
 
         # Step 6: Band-pass Filtering
@@ -137,8 +147,13 @@ def fmri_preprocess_subject(subject_id, base_dir, measurement_type, ref_template
             standardize=True,
             low_pass=0.1, high_pass=0.01,
             t_r=tr,
-            mask_img=mni_mask_path
+            mask_img=mni_mask_path,
+            # confounds=os.path.join(output_dir, f"motion_corrected_{file_id}.nii.gz.par")
+            confounds=os.path.join(output_dir, f"motion_corrected_{file_id}_confounds.tsv")
         )
+
+        filtered_img.set_qform(smoothed_fmri_img.affine)
+        filtered_img.header.set_zooms(smoothed_fmri_img.header.get_zooms())
 
         nib.save(filtered_img, os.path.join(output_dir, f"bandpass_filtered_{file_id}.nii.gz"))
         
