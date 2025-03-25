@@ -1,0 +1,26 @@
+
+# Rough explanation (not guaranteed to be correct)
+relCBF: Relative Cerebral Blood Flow
+MoCoSeries: Motion Correction Series
+Perfusion_Weighted: Perfusion Weighted Imaging
+Axial_rsfMRI__Eyes_Open_: Resting-state fMRI with eyes open
+Axial_MB_rsfMRI__Eyes_Open_: Multi-band resting-state fMRI, eyes open
+Resting_State_fMRI: General resting-state fMRI
+Axial_fcMRI__EYES_OPEN_: Functional connectivity fMRI, eyes open
+Axial_rsfMRI__EYES_OPEN_: Resting-state fMRI, eyes open
+Extended_Resting_State_fMRI: Longer-duration resting-state fMRI
+Axial_fcMRI__Eyes_Open_: Functional connectivity fMRI, eyes open
+Axial_rsfMRI__Eyes_Open__-phase_P_to_A: rs-fMRI with phase encoding from Posterior to Anterior
+Axial_MB_rsfMRI__EYES_OPEN___MSV22: Multi-band rs-fMRI, protocol version MSV22
+Axial_HB_rsfMRI__Eyes_Open___MSV22_: High-bandwidth rs-fMRI, MSV22
+
+# Rough explanation (not guaranteed to be correct)
+Resting-state fMRI measures spontaneous brain activity when the subject is not performing any specific task, typically lying still with eyes open or closed.
+Multi-band imaging reduces the repetition time (TR) in fMRI by allowing multiple slices to be acquired simultaneously, enabling higher temporal resolution.
+rsfMRI refers to fMRI data collected during the resting state, while fcMRI refers to the same type of data labeled with the intent of performing functional connectivity analysis.
+The underlying data may be identical, with the difference only in naming conventions.
+If the metadata (e.g., TR, number of slices, scan duration) is the same between the two folders, they likely represent the same scan.
+Extended_Resting_State_fMRI refers to a longer-duration resting-state fMRI scan, typically acquired to enhance the reliability of functional connectivity analysis and allow for richer temporal information.
+Perfusion Weighted Imaging (PWI) is an MRI technique used to measure cerebral blood flow, often through methods like ASL or DSC.
+While both fMRI and 4D PWI data may involve similar preprocessing steps like motion correction and normalization, their processing pipelines diverge significantly due to their different goals.
+relCBF stands for Relative Cerebral Blood Flow. It represents a normalized perfusion map derived from perfusion-weighted imaging (typically ASL).
