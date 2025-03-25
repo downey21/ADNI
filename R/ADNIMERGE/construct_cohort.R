@@ -128,7 +128,7 @@ data_info <-
 # data_info %>% filter(is.na(EXAMDATE)) %>% count()
 # data_info[is.na(data_info$EXAMDATE), ]
 
-data_info <- data_info %>% filter(!is.na(EXAMDATE))
+data_info <- data_info %>% dplyr::filter(!is.na(EXAMDATE))
 
 # data_info %>%
 #     dplyr::arrange(dplyr::desc(date_diff)) %>%
