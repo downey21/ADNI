@@ -1,14 +1,14 @@
 #!/bin/bash
-#SBATCH --job-name=sbatch_preprocessing_MRI_parallel_example_python
+#SBATCH --job-name=slurm_Axial_rsfMRI__Eyes_Open_dicom_to_nifti_parallel
 #SBATCH --partition=cpu
 #SBATCH --nodelist=node01
-#SBATCH --cpus-per-task=10
+#SBATCH --cpus-per-task=34
 #SBATCH --mem=0
 #SBATCH --time=3-23:59:59
-#SBATCH --output=output_sbatch_preprocessing_MRI_parallel_example_python.log
-#SBATCH --error=output_sbatch_preprocessing_MRI_parallel_example_python.log
+#SBATCH --output=output_slurm_Axial_rsfMRI__Eyes_Open_dicom_to_nifti_parallel.log
+#SBATCH --error=output_slurm_Axial_rsfMRI__Eyes_Open_dicom_to_nifti_parallel.log
 
-# sudo sbatch sbatch_preprocessing_MRI_parallel_example_python.sh
+# sudo sbatch slurm_Axial_rsfMRI__Eyes_Open_dicom_to_nifti_parallel.sh
 
 # Configuration
 DOCKER_IMAGE="docker.io/downey21/repo_private:adni_v1"
@@ -31,17 +31,17 @@ echo "Loading Docker image from $IMAGE_TAR..."
 docker load -i "$IMAGE_TAR"
 
 # Run the container
-echo "Running the preprocessing MRI..."
+echo "Running the DICOM to NIfTI conversion..."
 docker run --rm \
     -v /node05_storage:/root/data \
     -v /home/dhseo/Project:/root/Project \
     "$DOCKER_IMAGE" \
-    bash -i -c "source ~/.bashrc && env PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 python3 /root/Project/ADNI/Python/preprocessing_MRI_parallel.py"
+    bash -i -c "source ~/.bashrc && env PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 python3 /root/Project/ADNI/Preprocessing/Axial_rsfMRI__Eyes_Open_dicom_to_nifti_parallel.py"
 
 # Check Docker run success
 if [[ $? -ne 0 ]]; then
     echo "Error: Docker execution failed"
     exit 1
 else
-    echo "preprocessing MRI completed successfully!"
+    echo "DICOM to NIfTI conversion completed successfully!"
 fi

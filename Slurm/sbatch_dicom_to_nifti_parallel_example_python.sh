@@ -20,13 +20,15 @@ if [[ ! -f "$IMAGE_TAR" ]]; then
     exit 1
 fi
 
-# Check if image is already loaded
-if ! docker images | grep -q "$(basename "$DOCKER_IMAGE" | cut -d':' -f1)"; then
-    echo "Loading Docker image from $IMAGE_TAR..."
-    docker load -i "$IMAGE_TAR"
-else
-    echo "Docker image already loaded, skipping load step."
+# Forcefully remove the existing image and reload a new one
+EXISTING_IMAGE_ID=$(docker images | grep "$(basename "$DOCKER_IMAGE" | cut -d':' -f1)" | awk '{print $3}')
+if [[ -n "$EXISTING_IMAGE_ID" ]]; then
+    echo "Removing old Docker image: $EXISTING_IMAGE_ID"
+    docker rmi -f "$EXISTING_IMAGE_ID"
 fi
+
+echo "Loading Docker image from $IMAGE_TAR..."
+docker load -i "$IMAGE_TAR"
 
 # Run the container
 echo "Running the DICOM to NIfTI conversion..."
