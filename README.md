@@ -108,7 +108,7 @@ Instead of analyzing the whole brain, researchers focus on predefined anatomical
 | Dataset  | Description  | Data Types |
 |----------|-------------|------------|
 | **ADNI (Alzheimer’s Disease Neuroimaging Initiative)** | Longitudinal study on Alzheimer’s Disease (AD), Mild Cognitive Impairment (MCI), and normal aging. | MRI, fMRI, PET, Genetic Data |
-| **OASIS (Open Access Series of Imaging Studies)** | Aging and Alzheimer’s disease cohort. | MRI |
+| **OASIS (Open Access Series of Imaging Studies)** | Aging and Alzheimer’s disease cohort. | MRI, fMRI, PET |
 | **UK Biobank** | Large-scale biomedical database. | MRI, fMRI |
 | **OpenNeuro** | Open-access neuroimaging repository. | fMRI, EEG, MEG |
 | **TCIA (The Cancer Imaging Archive)** | Neuro-oncology imaging data. | MRI, PET |
