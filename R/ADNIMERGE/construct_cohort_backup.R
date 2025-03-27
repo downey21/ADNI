@@ -8,20 +8,47 @@ setwd("/root/Project/ADNI")
 suppressPackageStartupMessages({
     library(readr)
     library(dplyr)
-    library(tidyr)
 })
 
 adnimerge_col_vector <- c(
     "PTID",           # Patient ID
     "COLPROT",        # ADNI study protocol at the time of data acquisition (e.g., ADNI1, ADNI2)
     "ORIGPROT",       # ADNI study protocol at the time of enrollment (e.g., ADNI1, ADNI2)
+    "VISCODE",        # Visit code (e.g., bl = baseline, m06 = month 6, m12 = month 12)
+    "DX_bl",          # Baseline diagnosis (e.g., CN = cognitively normal, MCI = mild cognitive impairment, AD = Alzheimer's disease)
     "DX",             # Diagnosis at the current visit (e.g., CN = cognitively normal, MCI = mild cognitive impairment, AD = Alzheimer's disease)
     "AGE",            # Age
     "PTGENDER",       # Sex
     "APOE4",          # Number of APOE4 alleles (0, 1, 2)
     "PTETHCAT",       # Ethnicity
     "PTRACCAT",       # Race
-    "EXAMDATE"        # Exam date
+    "EXAMDATE",       # Exam date
+    "EXAMDATE_bl",    # Baseline exam date
+    "AV45",           # Amyloid PET scan (commonly AV45, PIB, or FBB)
+    "AV45_bl",        # Baseline amyloid PET scan
+    "ABETA",          # CSF or plasma amyloid-beta biomarker
+    "ABETA_bl",       # Baseline CSF or plasma amyloid-beta biomarker
+    "TAU",            # CSF total tau biomarker
+    "TAU_bl",         # Baseline CSF total tau biomarker
+    "PTAU",           # CSF phosphorylated tau (specific to Alzheimer's disease)
+    "PTAU_bl",        # Baseline CSF phosphorylated tau
+    "FLDSTRENG",      # MRI field strength in Tesla (e.g., 1.5T or 3T)
+    "FLDSTRENG_bl",   # Baseline MRI field strength
+    "FSVERSION",      # FreeSurfer software version used for MRI analysis
+    "Ventricles",     # Volume of the ventricles
+    "Ventricles_bl",  # Baseline volume of the ventricles
+    "Hippocampus",    # Volume of the hippocampus
+    "Hippocampus_bl", # Baseline volume of the hippocampus
+    "WholeBrain",     # Whole brain volume
+    "WholeBrain_bl",  # Baseline whole brain volume
+    "Entorhinal",     # Entorhinal cortex thickness or volume (related to AD)
+    "Entorhinal_bl",  # Baseline entorhinal cortex thickness or volume
+    "Fusiform",       # Fusiform gyrus thickness or volume (related to AD)
+    "Fusiform_bl",    # Baseline fusiform gyrus thickness or volume
+    "MidTemp",        # Middle temporal gyrus thickness or volume (related to AD)
+    "MidTemp_bl",     # Baseline middle temporal gyrus thickness or volume
+    "ICV",            # Intracranial volume
+    "ICV_bl"          # Baseline intracranial volume
 )
 
 adnimerge <- readr::read_csv(
@@ -72,7 +99,7 @@ fmri <- readr::read_csv(
     )
 )
 
-# fmri %>% count(fmri_description, name = "count", sort = TRUE) %>% print(n = 20)
+fmri %>% count(fmri_description, name = "count", sort = TRUE) %>% print(n = 20)
 
 fmri <-
     fmri %>%
@@ -106,43 +133,11 @@ data_info <-
 data_info <- 
     data_info %>%
     dplyr::filter(!is.na(EXAMDATE)) %>%
-    dplyr::filter(!is.na(DX)) %>%
-    dplyr::filter(!is.na(APOE4))
+    dplyr::filter(!is.na(DX))
 
 # data_info %>%
 #     dplyr::arrange(dplyr::desc(date_diff)) %>%
 #     dplyr::select(PTID, fmri_date, EXAMDATE, date_diff) %>%
 #     head()
 
-data_info <-
-    data_info %>%
-    dplyr::select(-EXAMDATE)
-
-data_info %>%
-    dplyr::count(DX)
-
-data_info %>%
-    dplyr::summarise(dplyr::across(dplyr::everything(), ~sum(is.na(.)))) %>%
-    tidyr::pivot_longer(cols = dplyr::everything(), names_to = "column", values_to = "na_count") %>%
-    print(n = 50)
-
-data_info <-
-    data_info %>%
-    dplyr::rename(
-        SEX = PTGENDER,
-        ETHNICITY = PTETHCAT,
-        RACE = PTRACCAT   
-    ) %>%
-    dplyr::relocate(
-        c("DX", "AGE", "SEX", "APOE4", "RACE", "ETHNICITY"),
-        .after = PTID
-    )
-
-write.csv(data_info, "./result/data_info.csv", row.names = FALSE)
-
-data_info %>%
-    dplyr::select(PTID, fmri_date) %>%
-    dplyr::mutate(
-        fmri_date = format(fmri_date, "%Y-%m-%d")
-    ) %>%
-    readr::write_csv("./result/ptid_date_list.csv")
+data_info

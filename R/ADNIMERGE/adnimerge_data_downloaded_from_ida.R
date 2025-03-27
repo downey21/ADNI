@@ -5,55 +5,55 @@ rm(list = ls())
 
 # ADNIMERGE_18Feb2025.csv
 
-# RID: 환자의 고유 식별 번호
-# * COLPROT: ADNI 연구 프로토콜 정보; 데이터 획득 시점 (예: ADNI1, ADNI2)
-# * ORIGPROT: ADNI 연구 프로토콜 정보; 연구 참여 시점 (예: ADNI1, ADNI2)
-# * PTID: 환자 ID
-# SITE: 연구 사이트 코드
-# * VISCODE: 방문 코드 (예: bl = baseline, m06 = 6개월 후, m12 = 12개월 후); 반복 측정 데이터
-# EXAMDATE: 검사 날짜
-# * DX_bl: 초기 진단 정보 (예: CN = 정상, MCI = 경도인지장애, AD = 알츠하이머)
-# * AGE: 나이
-# * PTGENDER: 성별
-# PTEDUCAT: 교육 연수
-# PTETHCAT: 민족 범주
-# PTRACCAT: 인종 범주
-# PTMARRY: 결혼 상태
-# * APOE4: APOE4 유전자 보유 여부 (0, 1, 2)
-# FDG: FDG-PET (포도당 대사)
-# PIB: 아밀로이드 PET 스캔 결과
-# * AV45: 아밀로이드 PET 스캔 결과 (PIB, AV45, FBB 중 가장 많이 사용됨)
-# FBB: 아밀로이드 PET 스캔 결과
-# * ABETA: CSF or Plasma AD 바이오마커 (베타-아밀로이드)
-# * TAU: CSF AD 바이오마커 (타우 단백질)
-# * PTAU: CSF AD (알츠하이머 특이) 바이오마커 (타우 단백질)
-# CDRSB: 임상치매등급(Clinical Dementia Rating Sum of Boxes)
-# ADAS11: ADAS-Cog 인지 테스트 점수
-# ADAS13: ADAS-Cog 인지 테스트 점수
-# ADASQ4: ADAS-Cog 인지 테스트 점수
-# RAVLT_immediate: 언어 기억력과 학습 능력을 평가 점수
-# RAVLT_learning: 언어 기억력과 학습 능력을 평가 점수
-# RAVLT_forgetting: 언어 기억력과 학습 능력을 평가 점수
-# RAVLT_perc_forgetting: 언어 기억력과 학습 능력을 평가 점수
-# LDELTOTAL: 알츠하이머병(AD) 및 경도인지장애(MCI) 환자들의 인지 기능 평가 점수
-# DIGITSCOR: 알츠하이머병(AD) 및 경도인지장애(MCI) 환자들의 인지 기능 평가 점수
-# TRABSCOR: 알츠하이머병(AD) 및 경도인지장애(MCI) 환자들의 인지 기능 평가 점수
-# FAQ: Functional Activities Questionnaire (기능 평가)
-# MOCA: 인지 기능을 전반적으로 평가하는 신경심리학적 검사 점수
-# Ecog~: 일상생활에서의 인지 기능 평가 점수
-# * FLDSTRENG: MRI 촬영에 사용된 자기장 세기(Tesla 단위)를 나타내는 변수 (같은 뇌 구조라도 1.5T와 3T에서 촬영된 영상은 차이가 날 수 있음)
-# * FSVERSION: FreeSurfer 버전 (MRI 분석 소프트웨어)
-# * IMAGEUID: MRI/PET 스캔 이미지 ID (DICOM/NIfTI 형식의 실제 뇌 영상 데이터와 매칭할 때 사용)
-# * Ventricles: 뇌실 부피
-# * Hippocampus: 해마 부피
-# * WholeBrain: 전체 뇌 부피
-# * Entorhinal: 내후각 피질 두께 혹은 부피 (AD 와 관계있음)
-# * Fusiform: 방추상회 두께 혹은 부피 (AD 와 관계있음)
-# * MidTemp: 중측두엽 두께 혹은 부피 (AD 와 관계있음)
-# * ICV: 두개강 용적 (Intracranial Volume)
-# * DX: 환자의 진단 상태를 나타냄 (CN (Cognitively Normal): 정상군 등 등)
-# PCAA: 평가 점수
-# * _bl: base line
+# RID: Unique subject identifier
+# * COLPROT: ADNI study protocol at the time of data acquisition (e.g., ADNI1, ADNI2)
+# * ORIGPROT: ADNI study protocol at the time of enrollment (e.g., ADNI1, ADNI2)
+# * PTID: Patient ID
+# SITE: Study site code
+# * VISCODE: Visit code (e.g., bl = baseline, m06 = month 6, m12 = month 12); indicates repeated measures
+# EXAMDATE: Date of examination
+# * DX_bl: Baseline diagnosis (e.g., CN = cognitively normal, MCI = mild cognitive impairment, AD = Alzheimer's disease)
+# * AGE: Age
+# * PTGENDER: Gender
+# PTEDUCAT: Years of education
+# PTETHCAT: Ethnicity category
+# PTRACCAT: Race category
+# PTMARRY: Marital status
+# * APOE4: Number of APOE4 alleles (0, 1, or 2)
+# FDG: FDG-PET (glucose metabolism)
+# PIB: Amyloid PET scan result
+# * AV45: Amyloid PET scan result (commonly used among PIB, AV45, FBB)
+# FBB: Amyloid PET scan result
+# * ABETA: CSF or plasma beta-amyloid biomarker
+# * TAU: CSF tau protein biomarker
+# * PTAU: CSF phosphorylated tau biomarker (specific to AD)
+# CDRSB: Clinical Dementia Rating – Sum of Boxes
+# ADAS11: ADAS-Cog cognitive assessment score (11-item)
+# ADAS13: ADAS-Cog cognitive assessment score (13-item)
+# ADASQ4: ADAS-Cog subtest score
+# RAVLT_immediate: Score evaluating verbal memory and learning
+# RAVLT_learning: Score evaluating verbal memory and learning
+# RAVLT_forgetting: Score evaluating verbal memory and learning
+# RAVLT_perc_forgetting: Score evaluating verbal memory and learning
+# LDELTOTAL: Cognitive performance score for AD and MCI
+# DIGITSCOR: Cognitive performance score for AD and MCI
+# TRABSCOR: Cognitive performance score for AD and MCI
+# FAQ: Functional Activities Questionnaire
+# MOCA: Montreal Cognitive Assessment – general cognitive function
+# Ecog~: Everyday Cognition questionnaire scores
+# * FLDSTRENG: Magnetic field strength of the MRI scanner (e.g., 1.5T or 3T)
+# * FSVERSION: FreeSurfer software version used for MRI analysis
+# * IMAGEUID: MRI/PET scan image ID (used to match DICOM/NIfTI image files)
+# * Ventricles: Volume of the ventricles
+# * Hippocampus: Volume of the hippocampus
+# * WholeBrain: Volume of the whole brain
+# * Entorhinal: Thickness or volume of the entorhinal cortex (related to AD)
+# * Fusiform: Thickness or volume of the fusiform gyrus (related to AD)
+# * MidTemp: Thickness or volume of the middle temporal gyrus (related to AD)
+# * ICV: Intracranial volume
+# * DX: Diagnosis status (e.g., CN = cognitively normal, etc.)
+# PCAA: Assessment score
+# * _bl: Indicates baseline value
 
 library(readr)
 

@@ -53,6 +53,8 @@ def convert_dicom_to_nifti_parallel(dicom_dir, nifti_dir, measurement_type_seque
     with multiprocessing.Pool(processes=num_workers) as pool:
         pool.starmap(convert_single_subject, [(subject, dicom_dir, nifti_dir, measurement_type_sequences) for subject in subject_list])
 
+    log_print("All Converting Completed!")
+
 if __name__ == "__main__":
 
     NUM_CORES = 20
