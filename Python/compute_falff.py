@@ -22,7 +22,6 @@ def compute_falff(nifti_file, output_path=None, low_freq=0.01, high_freq=0.1):
     
     # Automatically get TR from header
     tr = img.header.get_zooms()[3]
-    print(f"Detected TR from NIfTI header: {tr} seconds")
 
     # Sampling frequency
     fs = 1.0 / tr
