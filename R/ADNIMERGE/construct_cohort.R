@@ -118,13 +118,13 @@ data_info <-
     data_info %>%
     dplyr::select(-EXAMDATE)
 
-data_info %>%
-    dplyr::count(DX)
+# data_info %>%
+#     dplyr::count(DX)
 
-data_info %>%
-    dplyr::summarise(dplyr::across(dplyr::everything(), ~sum(is.na(.)))) %>%
-    tidyr::pivot_longer(cols = dplyr::everything(), names_to = "column", values_to = "na_count") %>%
-    print(n = 50)
+# data_info %>%
+#     dplyr::summarise(dplyr::across(dplyr::everything(), ~sum(is.na(.)))) %>%
+#     tidyr::pivot_longer(cols = dplyr::everything(), names_to = "column", values_to = "na_count") %>%
+#     print(n = 50)
 
 data_info <-
     data_info %>%
@@ -138,7 +138,8 @@ data_info <-
         .after = PTID
     )
 
-write.csv(data_info, "./result/data_info.csv", row.names = FALSE)
+data_info %>%
+    readr::write_csv("./result/data_info.csv")
 
 data_info %>%
     dplyr::select(PTID, fmri_date) %>%
@@ -146,3 +147,15 @@ data_info %>%
         fmri_date = format(fmri_date, "%Y-%m-%d")
     ) %>%
     readr::write_csv("./result/ptid_date_list.csv")
+
+data_info %>%
+    dplyr::filter(DX == "Dementia") %>%
+    readr::write_csv("./result/data_info_Dementia.csv")
+
+data_info %>%
+    dplyr::filter(DX == "CN") %>%
+    readr::write_csv("./result/data_info_CN.csv")
+
+data_info %>%
+    dplyr::filter(DX == "MCI") %>%
+    readr::write_csv("./result/data_info_MCI.csv")
