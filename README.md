@@ -103,7 +103,18 @@ Instead of analyzing the whole brain, researchers focus on predefined anatomical
 	3. Apply the selected atlas to segment functional regions.
 	4. Extract mean data from each ROI.
 
-## 5. Dataset Sources
+## 5. fALFF (fractional Amplitude of Low-Frequency Fluctuations)
+
+**fALFF** is a commonly used measure in fMRI analysis that quantifies spontaneous brain activity.
+
+- **Purpose:** fALFF highlights the relative contribution of low-frequency oscillations, which are thought to reflect meaningful spontaneous neural activity, while reducing the influence of physiological noise.
+- **Processing Steps:**
+   1. Perform Fourier Transform on the voxel-wise time series.
+   2. Calculate the sum of amplitudes in the low-frequency band (0.01–0.1 Hz).
+   3. Divide by the total amplitude across all frequencies.
+   4. Generate a 3D fALFF map representing spatial variations in intrinsic brain activity.
+
+## 6. Dataset Sources
 
 | Dataset  | Description  | Data Types |
 |----------|-------------|------------|
