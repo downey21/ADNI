@@ -1,14 +1,14 @@
 #!/bin/bash
-#SBATCH --job-name=slurm_Axial_rsfMRI__Eyes_Open_preprocessing_fMRI_parallel
+#SBATCH --job-name=slurm_Axial_rsfMRI__Eyes_Open_compute_falff_parallel
 #SBATCH --partition=cpu
 #SBATCH --nodelist=node01
 #SBATCH --cpus-per-task=34
 #SBATCH --mem=0
 #SBATCH --time=3-23:59:59
-#SBATCH --output=slurm_Axial_rsfMRI__Eyes_Open_preprocessing_fMRI_parallel.log
-#SBATCH --error=slurm_Axial_rsfMRI__Eyes_Open_preprocessing_fMRI_parallel.log
+#SBATCH --output=slurm_Axial_rsfMRI__Eyes_Open_compute_falff_parallel.log
+#SBATCH --error=slurm_Axial_rsfMRI__Eyes_Open_compute_falff_parallel.log
 
-# sudo sbatch slurm_Axial_rsfMRI__Eyes_Open_preprocessing_fMRI_parallel.sh
+# sudo sbatch slurm_Axial_rsfMRI__Eyes_Open_compute_falff_parallel.sh
 
 # Configuration
 DOCKER_IMAGE="docker.io/downey21/repo_private:adni_v1"
@@ -31,7 +31,7 @@ echo "Loading Docker image from $IMAGE_TAR..."
 docker load -i "$IMAGE_TAR"
 
 # Run the container
-echo "Running the preprocessing fMRI..."
+echo "Running the preprocessing fMRI fALFF..."
 docker run --rm \
     -v /node05_storage:/root/data \
     -v /home/dhseo/Project:/root/Project \
@@ -39,12 +39,12 @@ docker run --rm \
     bash -i -c "source ~/.bashrc && \
                 export OPENBLAS_NUM_THREADS=1 && \
                 export OMP_NUM_THREADS=1 && \
-                env PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 python3 /root/Project/ADNI/Preprocessing/Axial_rsfMRI__Eyes_Open_preprocessing_fMRI_parallel.py"
+                env PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 python3 /root/Project/ADNI/Preprocessing/Axial_rsfMRI__Eyes_Open_compute_falff_parallel.py"
 
 # Check Docker run success
 if [[ $? -ne 0 ]]; then
     echo "Error: Docker execution failed"
     exit 1
 else
-    echo "preprocessing fMRI completed successfully!"
+    echo "preprocessing fMRI fALFF completed successfully!"
 fi
